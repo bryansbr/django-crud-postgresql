@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Django CRUD</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'styles.css' %}">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 offset-md-4">
+        <h1 class="fw-bold text-center">Task Manager</h1>
+        <form action="{% url 'create_task' %}" method="POST" class="card card-body bg-secondary">
+          {% csrf_token %}
+          <label for="title">Title:</label>
+          <input type="text" name="title" placeholder="Add a title" class="form-control mb-2" autofocus>
+          
+          <label for="description">Description:</label>
+          <textarea name="description" rows="3" placeholder="Write a description" class="form-control mb-2"></textarea>
+          <button class="btn btn-success">Save</button>
+        </form>
+        {% for task in tasks %}
+        <div class="card card-body text-black mt-2 d-flex flex-row justify-content-between">
+          <div>
+            <h4>{{ task.title }}</h4>
+            <p>{{ task.description }}</p>
+          </div>          
+          <div class="btn-group gap-2">
+            <a href="#">
+              <button class="btn btn-warning ml-2">Edit</button>
+            </a>
+            <form action="{% url 'delete_task' task.id %}" method="POST" class="confirm-delete">
+              {% csrf_token %}
+              <button class="btn btn-danger ml-2">Delete</button>
+            </form>
+          </div>
+        </div>
+        {% empty %}
+          <h2 class="display-4 text-center">No tasks yet :|</h2>
+        {% endfor %}        
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+  <!-- Delete alert implementation -->
+  <script>
+    $('.confirm-delete').submit(function(e) {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.submit();
+            }
+        })
+    });
+  </script>
+</body>
+</html>
